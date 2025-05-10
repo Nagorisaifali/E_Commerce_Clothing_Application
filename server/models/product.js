@@ -15,10 +15,10 @@ const productSchema = new Schema({
     price : {
         type : Number , 
         required:true , 
-    },
+    }, 
     images : [{
         Type : String , 
-    }],
+    }] ,
     seller : {
         type : Schema.Types.ObjectId  , 
         ref : "user"  , 
