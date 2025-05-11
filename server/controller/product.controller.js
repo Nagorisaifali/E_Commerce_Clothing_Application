@@ -16,14 +16,13 @@ exports.createProduct = async (req , res) =>{
             }) ; 
         }
 
-
-
-        const product = await productModel.create({
-            name , description , price , images : req.file , seller : req.user._id  
+        const product = await productModel.create({ 
+            name , description , price , images  , seller : req.user._id  ,
         })
 
         res.status(201).json({
-            message : "Product created successfully" 
+            message : "Product created successfully" , 
+            product 
         })
 
     }

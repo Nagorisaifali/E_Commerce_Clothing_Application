@@ -16,9 +16,9 @@ const productSchema = new Schema({
         type : Number , 
         required:true , 
     }, 
-    images : [{
-        Type : String , 
-    }] ,
+    images : [
+        String 
+    ] ,
     seller : {
         type : Schema.Types.ObjectId  , 
         ref : "user"  , 

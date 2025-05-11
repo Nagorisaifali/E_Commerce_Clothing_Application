@@ -11,3 +11,5 @@ router.use(authMiddleware.isAuthenticated).use(authMiddleware.isSeller)
 router.post("/create" , upload.any() ,  productController.createProduct)
 
 module.exports = router ; 
+
+//  upload.array('images')

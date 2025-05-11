@@ -35,7 +35,7 @@ export default function Home() {
               product 
             }
           })} key={product._id} >
-              <img src={product.images[0]} alt={product.name} className="w-full h-48 object-cover rounded-t" />
+          <img src={product.images[0]} alt={product.name} className="w-full h-48 object-cover rounded-t" />
               <div className="p-4">
                 <h3 className="text-xl font-bold">{product.name}</h3>
                 <p className="text-gray-600">${product.description}</p>
