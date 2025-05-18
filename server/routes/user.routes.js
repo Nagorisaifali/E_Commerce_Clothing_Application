@@ -15,4 +15,6 @@ router.get("/products/:id" , authMiddleware.isAuthenticated , userController.get
 router.get("/order/:id" , authMiddleware.isAuthenticated , userController.createOrder) ; 
 router.post('/verify/:id' , authMiddleware.isAuthenticated , userController.verifyPayment) ; 
 
+router.get('/me' , authMiddleware.isAuthenticated , userController.userProfile) ;  
+ 
 module.exports = router ; 

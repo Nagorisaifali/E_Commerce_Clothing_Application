@@ -64,7 +64,7 @@ module.exports.signin = async (req , res , next) =>{
             })
         } 
 
-        const isPasswordCorrect = await bcrypt.compare(password , user.password) ; 
+        const isPasswordCorrect = await bcrypt.compare(password , user.password) ;    
         if(!isPasswordCorrect){
             return res.status(400).json({
                 message : "invalid email or password" , 
@@ -144,6 +144,16 @@ module.exports.getProductById = async (req , res , next) => {
     }
 }
 
+module.exports.userProfile = async (req , res , next) => {
+    try{
+        const user = await userModel.findById(req.user.id).select('-password') ; 
+        res.json(user) ;  
+    }
+    catch(err){
+        next(err) ; 
+    }
+}
+
 module.exports.createOrder = async (req , res , next) => {
     try{
         const product = await productModel.findById(req.params.id) ; 
@@ -151,8 +161,8 @@ module.exports.createOrder = async (req , res , next) => {
             amount : product.price * 100 , 
             currency : "INR" , 
             receipt : product._id   , 
-
         }
+
         const order = await instance.orders.create(option) ;
 
         res.status(200).json({
@@ -160,9 +170,9 @@ module.exports.createOrder = async (req , res , next) => {
         });   
 
         const payment = await paymentModel.create({
-            orderId : order.id , 
+            orderId : order.id ,   
             amount : product.price , 
-            currency : "INR" , 
+            currency : "INR" ,  
             status : "pending" , 
         }) ; 
 
@@ -173,102 +183,56 @@ module.exports.createOrder = async (req , res , next) => {
     }
 }
 
+ 
+module.exports.verifyPayment = async (req , res , next) => {
+    try{
 
-module.exports.verifyPayment = async (req, res, next) => {
-    try {
-        const { paymentId, orderId, signature } = req.body;
+        const { paymentId , orderId , signature } = req.body ; 
         const secret = process.env.RAZORPAY_KEY_SECRET ; 
 
         const { validatePaymentVerification } = require("../node_modules/razorpay/dist/utils/razorpay-utils.js") ;
-
-        const isValid = validatePaymentVerification(
-            {
-                order_id: orderId,     
-                payment_id: paymentId,
-            },
-            signature,
-            secret
-        );
-
-        const payment = await paymentModel.findOne({
-            orderId: orderId,
-        });
-
-        if (!payment) {
-            return res.status(404).json({
-                message: "Payment record not found",
-            });
-        }
-
-        if (isValid) {
-            payment.paymentId = paymentId;
-            payment.signature = signature;
-            payment.status = "Success";
-        } else {
-            payment.status = "Failed";
-        }
-
-        await payment.save();
-
-        if (isValid) {
-            res.status(200).json({
-                message: "Payment verified successfully",
-            });
-        } else {
-            res.status(400).json({
-                message: "Payment verification failed",
-            });
-        }
-    } catch (err) {
-        console.error(err);
-        next(err);
-    }
-};
-
-
-// module.exports.verifyPayment = async (req , res , next) => {
-//     try{
-
-//         const { paymentId , orderId , signature } = req.body ; 
-        // const secret = process.env.RAZORPAY_KEY_SECRET ; 
-
-//         const { validatePaymentVerification } = require("../node_modules/razorpay/dist/utils/razorpay-utils.js") ; 
-
-//         const isValid = validatePaymentVerification({
-//             order_Id : orderId , 
-//             payment_id : paymentId , 
-//         }, signature , secret) ; 
-
-//         if(isValid){
-
-//             const payment = await paymentModel.findOne({
-//                 orderId : orderId 
-//             })
-
-//             payment.paymentId = paymentId ; 
-//             payment.signature = signature ; 
-//             payment.status = "Success" ; 
-
-//             await payment.save() ; 
-
-//             res.status(200).json({
-//                 message : "Payment verified successfully"  ,
-//             })
-
-//         }else {
-//             const payment = await paymentModel.findOne({
-//                 orderId : orderId 
-//             })
-
-//             payment.status = "failed" ; 
-
-//             res.status(400).json({
-//                 message : "Payment verification faiiled" ,
-//             })
-//         }
+    
         
-//     }
-//     catch(err){
-//         next(err) ; 
-//     }
-// }
+
+        const isValid = validatePaymentVerification({
+            order_id : orderId , 
+            payment_id : paymentId ,  
+        }, signature , secret) ; 
+
+        if(isValid){
+
+            const payment = await paymentModel.findOne({
+                orderId : orderId 
+            })
+                                                    
+            payment.paymentId = paymentId ; 
+            payment.signature = signature ; 
+            payment.status = "Success" ; 
+
+            await payment.save() ; 
+
+            res.status(200).json({
+                message : "Payment verified successfully"  ,
+            })
+
+        }else {
+            const payment = await paymentModel.findOne({
+                orderId : orderId 
+            })
+
+            payment.status = "failed" ; 
+
+            res.status(400).json({
+                message : "Payment verification faiiled" ,
+            })
+        }
+        
+    }
+    catch(err){
+        next(err) ; 
+    }
+}
+
+
+
+

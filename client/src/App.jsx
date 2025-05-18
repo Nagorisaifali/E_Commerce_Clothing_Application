@@ -9,7 +9,7 @@ import Login from './pages/Login';
 import About from "./pages/About"
 import Help from './pages/Help';
 import ProductDetails from './pages/ProductDetails';
-
+import Profile from './pages/Profile' ; 
 
 function App() {
 
@@ -25,7 +25,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/help" element={<Help />} />
           <Route path="/product-details" element={<ProductDetails />} />
-
+          <Route path="/me" element={<Profile  />} /> 
        </Routes>
       </div>
       <Footer />
